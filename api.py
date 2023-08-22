@@ -1,0 +1,1 @@
+server = "https://ponto-beckend.vercel.app/"
