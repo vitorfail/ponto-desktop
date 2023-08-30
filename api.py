@@ -1,1 +1,1 @@
-server = "https://ponto-beckend.vercel.app/"
+server = "http://localhost:8080/"

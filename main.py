@@ -154,10 +154,11 @@ class PontoOnline():
 					tkmb.showerror(title="Err",message="O código está errado")
 				else:
 					if( "ponto" in r.json()["result"]):
-						if(r.json()["result"]["ponto"] == "saida"):
-							tkmb.showinfo(title="Saida",message="Até Amanhâ")
 						if(r.json()["result"]["ponto"] == "JA_SAIU"):
 							tkmb.showerror(title="Erro",message="Você já saiu. Não pode mais bater ponto hoje")
+						else:
+							tkmb.showinfo(title="Saida",message=r.json()["result"]["ponto"])
+
 					else:
 						tkmb.showinfo(title="Ponto Batido",message="Bem-vindo")
 			else:
