@@ -1,6 +1,7 @@
-import customtkinter as ctk
 import tkinter.messagebox as tkmb
 import tkinter as tk
+from tkinter import Scrollbar
+from ttkwidgets import ScrolledListbox
 import requests
 import os
 from api import server
@@ -30,9 +31,9 @@ class PontoOnline():
 		self.lista = []
 		
 
-		self.ponto = ctk.CTkScrollableFrame(self.root)
-		self.login = ctk.CTkFrame(self.root)
-		self.aguarde = ctk.CTkFrame(self.root)
+		self.ponto = Scrollbar(self.root, orient="vertical")
+		self.login = tk.Frame(self.root)
+		self.aguarde = tk.Frame(self.root)
 
 		self.current_frame = self.login
 		self.show_frame()
@@ -72,39 +73,39 @@ class PontoOnline():
 			ler = json.load(arquivo)
 		for nome in ler:
 			if(str(nome["id"])+"_"+ nome["user"]+".yml" in os.listdir(pasta_faces)) == False:
-				self.linha = ctk.CTkFrame(self.ponto)
-				self.linha.pack(padx=10, pady=10, fill=ctk.X)
-				self.label = ctk.CTkLabel(master=self.linha,text=nome["user"].upper())
-				self.label.pack(side=ctk.TOP, padx=10)
+				self.linha = tk.Frame(self.ponto)
+				self.linha.pack(padx=10, pady=10, fill=tk.X)
+				self.label = tk.Label(master=self.linha,text=nome["user"].upper())
+				self.label.pack(side=tk.TOP, padx=10)
 
-				self.button = ctk.CTkButton(master=self.linha,text='CADASTRAR ROSTO', command=lambda i=nome["id"], n=nome['user']: self.cadastro_rosto(i, n))
-				self.button.pack(side=ctk.TOP)
+				self.button = tk.Button(master=self.linha,text='CADASTRAR ROSTO', command=lambda i=nome["id"], n=nome['user']: self.cadastro_rosto(i, n))
+				self.button.pack(side=tk.TOP)
 			else:
-				self.linha = ctk.CTkFrame(self.ponto)
-				self.linha.pack(padx=10, pady=10, fill=ctk.X)
-				self.label = ctk.CTkLabel(master=self.linha,text=nome["user"].upper())
-				self.label.pack(side=ctk.TOP, padx=10)
+				self.linha = tk.Frame(self.ponto)
+				self.linha.pack(padx=10, pady=10, fill=tk.X)
+				self.label = tk.Label(master=self.linha,text=nome["user"].upper())
+				self.label.pack(side=tk.TOP, padx=10)
 
-				self.button = ctk.CTkButton(master=self.linha,text='BATER', command=lambda i=nome["id"] , n=nome['user']: self.bater(i, n))
-				self.button.pack(side=ctk.TOP)
+				self.button = tk.Button(master=self.linha,text='BATER', command=lambda i=nome["id"] , n=nome['user']: self.bater(i, n))
+				self.button.pack(side=tk.TOP)
 		self.variable_ready.set()
 	def create_login(self):
-		self.label = ctk.CTkLabel(master=self.login,text='Bater ponto')
+		self.label = tk.Label(master=self.login,text='Bater ponto')
 		self.label.pack(pady=12,padx=10)
 
 
-		self.user_entry= ctk.CTkEntry(master=self.login,placeholder_text="User")
+		self.user_entry= tk.Entry(master=self.login)
 		self.user_entry.pack(pady=12,padx=10)
 
-		self.senha_entry= ctk.CTkEntry(master=self.login,placeholder_text="Senha", show="*")
+		self.senha_entry= tk.Entry(master=self.login, show="*")
 		self.senha_entry.pack(pady=12,padx=10)
 
 
-		self.button = ctk.CTkButton(master=self.login,text='CONFIRMAR',command=self.registrar)
+		self.button = tk.Button(master=self.login,text='CONFIRMAR',command=self.registrar)
 		self.button.pack(pady=12,padx=10)
 		self.variable_ready.set()
 	def loading(self):
-		self.label = ctk.CTkLabel(master=self.aguarde,text='AGUARDE...')
+		self.label = tk.Label(master=self.aguarde,text='AGUARDE...')
 		self.label.pack(pady=12,padx=10)
 	
 	def registrar(self):
@@ -230,11 +231,6 @@ def update_variable():
     variable_ready = True
 
 def main():
-	ctk.set_appearance_mode("dark")
-
-	# Selecting color theme - blue, green, dark-blue
-	ctk.set_default_color_theme("blue")
-	tkmb.showinfo("Agurade", "Agurade enquanto fazemos as configurações e conectamos com o servidor.")
 	nome_pasta = "PontoLog"
 	dataset = "dataset"
 	files_yml = "dataFace"
@@ -250,7 +246,7 @@ def main():
 		caminho_completo.mkdir()
 		(caminho_completo/dataset).mkdir()
 		(caminho_completo/files_yml).mkdir()
-	root = ctk.CTk()
+	root = tk.Tk()
 	app = PontoOnline(root)
 	app.variable_ready.wait()
 	root.mainloop()
