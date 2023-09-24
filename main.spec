@@ -8,7 +8,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('icon.ico', '.'), ('haarcascade_frontalface_default.xml', '.')],
+    datas=[('icon.ico', '.'), ('haarcascade_frontalface_default.xml', '.'), ('c1.png', '.'), ('c2.png', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
