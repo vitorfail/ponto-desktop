@@ -30,9 +30,8 @@ def show_frame():
 		else:
 			f=0
 			ler.close()
-
 	else:
-		l = open(f,"w")
+		l = open(o,"w")
 		l.close()
 		ler = open(file_path, "w")
 		ler.close()
@@ -42,7 +41,8 @@ class PontoOnline():
 		self.variable_ready = threading.Event()
 		self.appdata_path = os.getenv('APPDATA')
 		self.texto_carregamento = "Aguarde estamos criando as pastas"
-		self.root = root	
+		self.root = root
+		self.root.configure(bg='#1e1e1e')	
 		screen_width = self.root.winfo_screenwidth()
 		screen_height = self.root.winfo_screenheight()
 		width = 400
@@ -107,22 +107,24 @@ class PontoOnline():
 			if(str(nome["id"])+"_"+ nome["user"]+".yml" in os.listdir(pasta_faces)) == False:
 				self.linha = tk.Frame(self.ponto, bg="#272727")
 				self.linha.pack(padx=10, pady=10, fill=tk.X)
-				self.label = tk.Label(master=self.linha,text=nome["user"].upper())
+				self.label = tk.Label(master=self.linha,text=nome["user"].upper(), bg="#272727", fg="white")
 				self.label.pack(side=tk.TOP, padx=10)
 
 				self.button = tk.Button(master=self.linha,text='CADASTRAR ROSTO', command=lambda i=nome["id"], n=nome['user']: self.cadastro_rosto(i, n))
 				self.button.pack(side=tk.TOP)
+				self.button.configure(bg='blue', fg='white')
 			else:
 				self.linha = tk.Frame(self.ponto, bg="#272727")
 				self.linha.pack(padx=10, pady=10, fill=tk.X)
-				self.label = tk.Label(master=self.linha,text=nome["user"].upper())
+				self.label = tk.Label(master=self.linha,text=nome["user"].upper(), bg="#272727", fg="white")
 				self.label.pack(side=tk.TOP, padx=10)
 
 				self.button = tk.Button(master=self.linha,text='BATER', command=lambda i=nome["id"] , n=nome['user']: self.bater(i, n))
 				self.button.pack(side=tk.TOP)
+				self.button.configure(bg='blue', fg='white')
 		self.variable_ready.set()
 	def create_login(self):
-		self.label = tk.Label(master=self.login,text='Bater ponto')
+		self.label = tk.Label(master=self.login,text='Bater ponto', bg="#272727", fg="white")
 		self.label.pack(pady=12,padx=10)
 
 
@@ -135,6 +137,7 @@ class PontoOnline():
 
 		self.button = tk.Button(master=self.login,text='CONFIRMAR',command=self.registrar)
 		self.button.pack(pady=12,padx=10)
+		self.button.configure(bg='blue', fg='white')
 		self.variable_ready.set()
 	def loading(self):
 		self.label = tk.Label(master=self.aguarde,text='AGUARDE...')
@@ -267,7 +270,6 @@ def main():
 	splash = tk.Tk()
 	app1 = SplashScreen(splash)
 	splash.destroy()
-	show_frame()
 	nome_pasta = "PontoLog"
 	dataset = "dataset"
 	files_yml = "dataFace"
@@ -283,7 +285,7 @@ def main():
 		caminho_completo.mkdir()
 		(caminho_completo/dataset).mkdir()
 		(caminho_completo/files_yml).mkdir()
-		
+	show_frame()		
 
 
 	root = tk.Tk()
