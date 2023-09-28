@@ -1,7 +1,6 @@
 import tkinter.messagebox as tkmb
 import tkinter as tk
 from tkinter import SUNKEN, Scrollbar
-from ttkwidgets import ScrolledListbox
 import requests
 import os
 from api import server
@@ -106,7 +105,7 @@ class PontoOnline():
 		for nome in ler:
 			if(str(nome["id"])+"_"+ nome["user"]+".yml" in os.listdir(pasta_faces)) == False:
 				self.linha = tk.Frame(self.ponto, bg="#272727")
-				self.linha.pack(padx=10, pady=10, fill=tk.X)
+				self.linha.pack( fill=tk.X)
 				self.label = tk.Label(master=self.linha,text=nome["user"].upper(), bg="#272727", fg="white")
 				self.label.pack(side=tk.TOP, padx=10)
 
@@ -115,7 +114,7 @@ class PontoOnline():
 				self.button.configure(bg='blue', fg='white')
 			else:
 				self.linha = tk.Frame(self.ponto, bg="#272727")
-				self.linha.pack(padx=10, pady=10, fill=tk.X)
+				self.linha.pack( fill=tk.X)
 				self.label = tk.Label(master=self.linha,text=nome["user"].upper(), bg="#272727", fg="white")
 				self.label.pack(side=tk.TOP, padx=10)
 
@@ -200,30 +199,31 @@ class PontoOnline():
 			else:
 				tkmb.showerror(title="Error",message="Não foi possivel bater seu ponto. Verifique sua internet e tente denovo")
 	def cadastro_rosto(self, id, nome):
-		CadastroRosto(str(id),nome)
-		rosto_cod = Treinamento(id, nome)
-		file_path = os.path.join(self.appdata_path, "PontoLog\\log.txt")
-		data_json = os.path.join(self.appdata_path, "PontoLog\\data.json")
-		ler = open(file_path, "r")
-		linhas = ler.readlines()
-		ler.close()
-		r = requests.post(server+'api/upar_rosto', data={"face":rosto_cod, "id":id}, headers={"Authorization": "Bearer "+linhas[0]})
-		if(r.status_code == 200 and r.json()["result"]["status"] == "ok"):
-			with open(data_json, 'r') as file:
-				dados = json.load(file)
-			for linha in dados:
-				if linha["id"] == id:
-					linha["face"] = True
-			with open(data_json, 'w') as file:
-				json.dump(dados, file)
-			for widget in self.ponto.winfo_children():
-				widget.destroy()
-			self.create_ponto()
-			self.current_frame = self.ponto
-			self.current_frame.pack(pady=20,padx=40,fill='both',expand=True)
-			tkmb.showinfo(title="Login efetuado",message="Rosto cadastrado!")
-		else:
-			tkmb.showerror(title="Error",message="Não foi possível se conectar com o servidor, Verifique a internet!")
+		cad = CadastroRosto(str(id),nome)
+		if cad == True:
+			rosto_cod = Treinamento(id, nome)
+			file_path = os.path.join(self.appdata_path, "PontoLog\\log.txt")
+			data_json = os.path.join(self.appdata_path, "PontoLog\\data.json")
+			ler = open(file_path, "r")
+			linhas = ler.readlines()
+			ler.close()
+			r = requests.post(server+'api/upar_rosto', data={"face":rosto_cod, "id":id}, headers={"Authorization": "Bearer "+linhas[0]})
+			if(r.status_code == 200 and r.json()["result"]["status"] == "ok"):
+				with open(data_json, 'r') as file:
+					dados = json.load(file)
+				for linha in dados:
+					if linha["id"] == id:
+						linha["face"] = True
+				with open(data_json, 'w') as file:
+					json.dump(dados, file)
+				for widget in self.ponto.winfo_children():
+					widget.destroy()
+				self.create_ponto()
+				self.current_frame = self.ponto
+				self.current_frame.pack(pady=20,padx=40,fill='both',expand=True)
+				tkmb.showinfo(title="Login efetuado",message="Rosto cadastrado!")
+			else:
+				tkmb.showerror(title="Error",message="Não foi possível se conectar com o servidor, Verifique a internet!")
 
 class SplashScreen():
 	def __init__(self, root):
