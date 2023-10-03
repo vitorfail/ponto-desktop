@@ -1,6 +1,7 @@
+import customtkinter as ctk
 import tkinter.messagebox as tkmb
 import tkinter as tk
-from tkinter import SUNKEN, Scrollbar
+from tkinter import SUNKEN
 import requests
 import os
 from api import server
@@ -14,16 +15,29 @@ import time
 from PIL import ImageTk, Image 
 
 f = 0
+nomes_json ={}
+font_size= 12
+font_style = "Arial"
 
 def show_frame():
 	path_app = os.getenv('APPDATA')
 	file_path = os.path.join(path_app, "PontoLog\\log.txt")
 	o = os.path.join(path_app, "PontoLog\\data.json")
+
 	if os.path.isfile(file_path) == True:
 		ler = open(file_path, "r")
 		linhas = ler.readlines()
 		if len(linhas)> 0:
 			ler.close()
+			r = requests.post(server+'api/puxar_rosto', json={"ids":"TODOS"}, headers={"Authorization": "Bearer "+linhas[0]})
+			if(r.status_code == 200 and r.json()["result"]["status"] == "ok"):
+				if len(r.json()["result"]["dados"])> 0:
+					with open(o, "w") as arquivo:
+						global nomes_json
+						nomes_json = r.json()["result"]["dados"]
+						json.dump(r.json()["result"]["dados"], arquivo)
+			else:
+				tkmb.showerror(title="Error",message="foi possível se conectar com o servidor, Verifique a internet!")
 			global f 
 			f =1
 		else:
@@ -55,11 +69,11 @@ class PontoOnline():
 		self.lista = []
 		
 
-		self.ponto = Scrollbar(self.root, orient="vertical", bg="#272727")
-		self.login = tk.Frame(self.root, bg= "#272727")
-		self.aguarde = tk.Frame(self.root, bg="#272727")
-
+		self.ponto = ctk.CTkScrollableFrame(self.root)
+		self.login = ctk.CTkFrame(self.root)
+		self.aguarde = ctk.CTkFrame(self.root)
 		self.current_frame = self.login
+
 		if f == 1:
 			self.create_ponto()
 			self.current_frame = self.ponto
@@ -71,7 +85,6 @@ class PontoOnline():
 
 
 		self.create_login()
-		self.loading()
         
 	def create_ponto(self):
 		pasta_faces = os.path.join(self.appdata_path, "PontoLog\dataFace")
@@ -81,67 +94,44 @@ class PontoOnline():
 		ler.close()
 
 		self.puxar_da_nuvem = []
-		if not os.listdir(pasta_faces):
-			r = requests.post(server+'api/puxar_rosto', json={"ids":"TODOS"}, headers={"Authorization": "Bearer "+linhas[0]})
-			if(r.status_code == 200 and r.json()["result"]["status"] == "ok"):
-				if len(r.json()["result"]["dados"])> 0:
-					nomes_json = os.path.join(self.appdata_path, "PontoLog\data.json")
-					with open(nomes_json, "w") as arquivo:
-						json.dump(r.json()["result"]["dados"], arquivo)
+		self.label2 = tk.Label(master=self.ponto,text='Lista de funcionários', bg="#272727", fg="white", font=(font_style, font_size))
+		self.label2.pack(side=tk.TOP, padx=10)
 
-			else:
-				tkmb.showerror(title="Error",message="foi possível se conectar com o servidor, Verifique a internet!")
-		else:
-			r = requests.post(server+'api/puxar_rosto', json={"ids":"TODOS"}, headers={"Authorization": "Bearer "+linhas[0]})
-			if(r.status_code == 200 and r.json()["result"]["status"] == "ok"):
-				if len(r.json()["result"]["dados"])> 0:
-					nomes_json = os.path.join(self.appdata_path, "PontoLog\data.json")
-					with open(nomes_json, "w") as arquivo:
-						json.dump(r.json()["result"]["dados"], arquivo)
-			else:
-				tkmb.showerror(title="Error",message=" foi possível se conectar com o servidor, Verifique a internet!")
-		with open(os.path.join(self.appdata_path, "PontoLog\data.json"), "r") as arquivo:
-			ler = json.load(arquivo)
-		for nome in ler:
+		for nome in nomes_json:
 			if(str(nome["id"])+"_"+ nome["user"]+".yml" in os.listdir(pasta_faces)) == False:
-				self.linha = tk.Frame(self.ponto, bg="#272727")
-				self.linha.pack( fill=tk.X)
-				self.label = tk.Label(master=self.linha,text=nome["user"].upper(), bg="#272727", fg="white")
-				self.label.pack(side=tk.TOP, padx=10)
+				self.linha = ctk.CTkFrame(self.ponto)
+				self.linha.pack(padx=10, pady=10, fill=ctk.X)
+				self.label = ctk.CTkLabel(master=self.linha,text=nome["user"].upper())
+				self.label.pack(side=ctk.TOP, padx=10)
 
-				self.button = tk.Button(master=self.linha,text='CADASTRAR ROSTO', command=lambda i=nome["id"], n=nome['user']: self.cadastro_rosto(i, n))
-				self.button.pack(side=tk.TOP)
-				self.button.configure(bg='blue', fg='white')
+				self.button = ctk.CTkButton(master=self.linha,text='CADASTRAR ROSTO', command=lambda i=nome["id"], n=nome['user']: self.cadastro_rosto(i, n))
+				self.button.pack(side=ctk.TOP)
+				
 			else:
-				self.linha = tk.Frame(self.ponto, bg="#272727")
-				self.linha.pack( fill=tk.X)
-				self.label = tk.Label(master=self.linha,text=nome["user"].upper(), bg="#272727", fg="white")
+				self.linha = ctk.CTkFrame(self.ponto)
+				self.linha.pack(padx=10, pady=10, fill=tk.X)
+				self.label = ctk.CTkLabel(master=self.linha,text=nome["user"].upper())
 				self.label.pack(side=tk.TOP, padx=10)
 
-				self.button = tk.Button(master=self.linha,text='BATER', command=lambda i=nome["id"] , n=nome['user']: self.bater(i, n))
-				self.button.pack(side=tk.TOP)
+				self.button = ctk.CTkButton(master=self.linha,text='BATER', command=lambda i=nome["id"] , n=nome['user']: self.bater(i, n))
+				self.button.pack(side=ctk.TOP)				
 				self.button.configure(bg='blue', fg='white')
 		self.variable_ready.set()
 	def create_login(self):
-		self.label = tk.Label(master=self.login,text='Bater ponto', bg="#272727", fg="white")
+		self.label = ctk.CTkLabel(master=self.login,text='Bater ponto')		
 		self.label.pack(pady=12,padx=10)
 
+		self.user_entry= ctk.CTkEntry(master=self.login,placeholder_text="User")		
+		self.user_entry.pack(pady=20,padx=20)
 
-		self.user_entry= tk.Entry(master=self.login)
-		self.user_entry.pack(pady=12,padx=10)
-
-		self.senha_entry= tk.Entry(master=self.login, show="*")
-		self.senha_entry.pack(pady=12,padx=10)
+		self.senha_entry= ctk.CTkEntry(master=self.login,placeholder_text="Senha", show="*")
+		self.senha_entry.pack(pady=20,padx=20)
 
 
-		self.button = tk.Button(master=self.login,text='CONFIRMAR',command=self.registrar)
+		self.button = ctk.CTkButton(master=self.login,text='CONFIRMAR',command=self.registrar)
 		self.button.pack(pady=12,padx=10)
-		self.button.configure(bg='blue', fg='white')
 		self.variable_ready.set()
-	def loading(self):
-		self.label = tk.Label(master=self.aguarde,text='AGUARDE...')
-		self.label.pack(pady=12,padx=10)
-	
+		
 	def registrar(self):
 		self.current_frame.pack_forget()
 		self.current_frame = self.aguarde
@@ -163,6 +153,7 @@ class PontoOnline():
 				f.close()
 				self.create_ponto()
 				tkmb.showinfo(title="Login efetuado",message="Você conseguiu se logar!")
+				show_frame()
 				self.current_frame.pack_forget()
 				self.current_frame = self.ponto
 				self.current_frame.pack(pady=20,padx=40,fill='both',expand=True)
@@ -254,19 +245,39 @@ class SplashScreen():
 		image_a=ImageTk.PhotoImage(Image.open('c2.png'))
 		image_b=ImageTk.PhotoImage(Image.open('c1.png'))
 
-
-
-
 		for i in range(5): #5loops
 			l1=tk.Label(self.root, image=image_a, border=0, relief=SUNKEN).place(x=180, y=145)
 			l2=tk.Label(self.root, image=image_b, border=0, relief=SUNKEN).place(x=200, y=145)
 			l3=tk.Label(self.root, image=image_b, border=0, relief=SUNKEN).place(x=220, y=145)
 			l4=tk.Label(self.root, image=image_b, border=0, relief=SUNKEN).place(x=240, y=145)
 			self.root.update_idletasks()
-			time.sleep(0.5)
+			time.sleep(0.2)
 
+			l1=tk.Label(self.root, image=image_b, border=0, relief=SUNKEN).place(x=180, y=145)
+			l2=tk.Label(self.root, image=image_a, border=0, relief=SUNKEN).place(x=200, y=145)
+			l3=tk.Label(self.root, image=image_b, border=0, relief=SUNKEN).place(x=220, y=145)
+			l4=tk.Label(self.root, image=image_b, border=0, relief=SUNKEN).place(x=240, y=145)
+			self.root.update_idletasks()
+			time.sleep(0.2)
+
+			l1=tk.Label(self.root, image=image_b, border=0, relief=SUNKEN).place(x=180, y=145)
+			l2=tk.Label(self.root, image=image_b, border=0, relief=SUNKEN).place(x=200, y=145)
+			l3=tk.Label(self.root, image=image_a, border=0, relief=SUNKEN).place(x=220, y=145)
+			l4=tk.Label(self.root, image=image_b, border=0, relief=SUNKEN).place(x=240, y=145)
+			self.root.update_idletasks()
+			time.sleep(0.2)
+
+			l1=tk.Label(self.root, image=image_b, border=0, relief=SUNKEN).place(x=180, y=145)
+			l2=tk.Label(self.root, image=image_b, border=0, relief=SUNKEN).place(x=200, y=145)
+			l3=tk.Label(self.root, image=image_b, border=0, relief=SUNKEN).place(x=220, y=145)
+			l4=tk.Label(self.root, image=image_a, border=0, relief=SUNKEN).place(x=240, y=145)
+			self.root.update_idletasks()
+			time.sleep(0.2)
 
 def main():
+	ctk.set_appearance_mode("dark")
+	ctk.set_default_color_theme("blue")
+
 	splash = tk.Tk()
 	app1 = SplashScreen(splash)
 	splash.destroy()
@@ -286,9 +297,7 @@ def main():
 		(caminho_completo/dataset).mkdir()
 		(caminho_completo/files_yml).mkdir()
 	show_frame()		
-
-
-	root = tk.Tk()
+	root = ctk.CTk()	
 	app = PontoOnline(root)
 	root.mainloop()
 	splash.mainloop()

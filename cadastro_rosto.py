@@ -27,7 +27,9 @@ def CadastroRosto(id, nome):
         # Caminho completo para a pasta "AppData" do usuário (Unix-like)
         # Caminho completo da pasta que você deseja criar
         caminho_completo = caminho_appdata / user
-        caminho_completo.mkdir()
+        if not caminho_completo.exists():
+            caminho_completo.mkdir()
+
 
         laco = True
         space = True
@@ -77,6 +79,8 @@ def CadastroRosto(id, nome):
                 texto_baixo="Aguarde...."
                 cor_retangulo = (0,0,255)
                 space = False # press 'ESC' to quit
+                break
+                return false
 
         cap.release()
         cv2.destroyAllWindows()
