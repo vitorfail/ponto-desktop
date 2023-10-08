@@ -79,8 +79,6 @@ def CadastroRosto(id, nome):
                 texto_baixo="Aguarde...."
                 cor_retangulo = (0,0,255)
                 space = False # press 'ESC' to quit
-                break
-                return false
 
         cap.release()
         cv2.destroyAllWindows()

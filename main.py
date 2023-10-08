@@ -115,7 +115,6 @@ class PontoOnline():
 
 				self.button = ctk.CTkButton(master=self.linha,text='BATER', command=lambda i=nome["id"] , n=nome['user']: self.bater(i, n))
 				self.button.pack(side=ctk.TOP)				
-				self.button.configure(bg='blue', fg='white')
 		self.variable_ready.set()
 	def create_login(self):
 		self.label = ctk.CTkLabel(master=self.login,text='Bater ponto')		
