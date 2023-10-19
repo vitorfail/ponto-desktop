@@ -37,7 +37,6 @@ def show_frame():
 						nomes_json = r.json()["result"]["dados"]
 						json.dump(r.json()["result"]["dados"], arquivo)
 			else:
-				print(r.json())
 				tkmb.showerror(title="Error",message="foi possível se conectar com o servidor, Verifique a internet!")
 			global f 
 			f =1
@@ -218,6 +217,8 @@ class PontoOnline():
 				tkmb.showinfo(title="Login efetuado",message="Rosto cadastrado!")
 			else:
 				tkmb.showerror(title="Error",message="Não foi possível se conectar com o servidor, Verifique a internet!")
+		else:
+			tkmb.showerror(title="Error",message="Não foi possivel cadastrar seu rosto")
 
 class SplashScreen():
 	def __init__(self, root):
